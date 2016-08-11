@@ -1,10 +1,15 @@
 package com.myemcu.app_15filestorm;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText mReadTxt;
     private Button mWrite;
     private Button mRead;
+    private String fileName = "MyFile.txt";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +42,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void write(String s) {
-        
+        try {
+                FileOutputStream fos = openFileOutput(fileName, Context.MODE_APPEND);
+                PrintStream ps = new PrintStream(fos);
+                ps.print(s);
+                ps.close();
+                fos.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String read() {
-        return null;
+        StringBuilder sBuilder = new StringBuilder("");
+        try {
+                FileInputStream is = openFileInput(fileName);
+                byte[] buffer = new byte[64];
+                int hasRead;
+                while ((hasRead=is.read(buffer)) != -1) {
+                    sBuilder.append(new String(buffer,0,hasRead));
+                }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sBuilder.toString();
     }
 
     private void findViews() {
